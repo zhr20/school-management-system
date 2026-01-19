@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة المدرسة - الحسابات</title>
+    <link rel="stylesheet" href="css/main.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            .print-section {
+                page-break-inside: avoid;
+            }
+        }
+        
+        .btn-add {
+            color: #ffffff !important;
+            border: none !important;
+            transition: all 0.2s ease !important;
+            padding: 0.625rem 1.25rem !important;
+            border-radius: 0.5rem !important;
+            font-weight: 500 !important;
+        }
+        
+        .btn-add:hover {
+            color: #ffffff !important;
+        }
+        
+        .btn-add i,
+        .btn-add span {
+            color: #ffffff !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- الهيدر الثابت -->
+    <nav id="mainHeader" class="bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-200 fixed top-0 left-0 right-0 z-50" style="position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; z-index: 9999 !important; width: 100% !important; display: block !important; visibility: visible !important; opacity: 1 !important;">
+        <div class="max-w-7xl mx-auto px-4" style="padding-left: 1rem !important; padding-right: 1rem !important;">
+            <div class="flex justify-between items-center h-16">
+                <!-- اسم المشروع -->
+                <div class="flex items-center">
+                    <a href="index.html" class="text-lg font-bold" style="font-size: 1.125rem !important; color: rgb(147, 51, 234);">
+                        نظام إدارة المدرسة
+                    </a>
+                </div>
+                
+                <!-- اسم المستخدم وصورته والإعدادات -->
+                <div class="flex items-center space-x-4 space-x-reverse gap-4">
+                    <!-- معلومات المستخدم -->
+                    <div class="flex items-center gap-2.5">
+                        <div class="text-right">
+                            <p class="text-xs font-medium text-gray-700" id="userName" style="font-size: 0.75rem !important; line-height: 1.2;">علي أحمد</p>
+                            <p class="text-xs text-gray-500" id="userPosition" style="font-size: 0.6875rem !important; line-height: 1.2;">مدير</p>
+                        </div>
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white font-bold text-xs shadow-sm overflow-hidden" id="userAvatar" style="flex-shrink: 0;">
+                            <img src="https://ui-avatars.com/api/?name=علي+أحمد&background=9333ea&color=fff&size=128" alt="صورة المستخدم" class="w-full h-full object-cover" id="userAvatarImg">
+                        </div>
+                    </div>
+                    
+                    <!-- زر الإعدادات -->
+                    <button onclick="openSettings()" class="w-10 h-10 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-purple-600 transition-all duration-200 relative flex items-center justify-center" title="الإعدادات">
+                        <i class="fas fa-cog" style="font-size: 1.25rem !important;"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- السايد بار -->
+    <aside id="mainSidebar" class="sidebar-main hidden lg:block">
+        <div class="sidebar-content">
+            <nav class="sidebar-nav">
+                <a href="index.html" class="sidebar-link" data-page="index" id="nav-home">
+                    <i class="fas fa-home"></i>
+                    <span>الصفحة الرئيسية</span>
+                </a>
+                <a href="teachers.html" class="sidebar-link" data-page="teachers" id="nav-teachers">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <span>المعلمين</span>
+                </a>
+                <a href="students.html" class="sidebar-link" data-page="students" id="nav-students">
+                    <i class="fas fa-user-graduate"></i>
+                    <span>الطلاب</span>
+                </a>
+                <a href="staff.html" class="sidebar-link" data-page="staff" id="nav-staff">
+                    <i class="fas fa-users"></i>
+                    <span>الموظفين</span>
+                </a>
+                <a href="subjects.html" class="sidebar-link" data-page="subjects" id="nav-subjects">
+                    <i class="fas fa-book"></i>
+                    <span>المواد</span>
+                </a>
+                <a href="accounts.html" class="sidebar-link active" data-page="accounts" id="nav-accounts">
+                    <i class="fas fa-wallet"></i>
+                    <span>الحسابات</span>
+                </a>
+            </nav>
+        </div>
+    </aside>
+    
+    <!-- زر فتح/إغلاق السايد بار للشاشات الصغيرة -->
+    <button id="sidebarToggle" class="lg:hidden fixed bottom-4 right-4 z-40 bg-purple-600 text-white p-3 rounded-full shadow-lg hover:bg-purple-700 transition-all duration-200">
+        <i class="fas fa-bars text-xl"></i>
+    </button>
+    
+    <!-- السايد بار للشاشات الصغيرة (قابل للطي) -->
+    <aside id="mobileSidebar" class="sidebar-main lg:hidden translate-x-full">
+        <div class="sidebar-content">
+            <div class="flex justify-between items-center mb-4 px-4 pt-4">
+                <h2 class="text-white font-bold text-lg">القائمة</h2>
+                <button id="closeSidebar" class="text-white hover:text-purple-200 transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="index.html" class="sidebar-link" data-page="index" id="nav-home-mobile">
+                    <i class="fas fa-home"></i>
+                    <span>الصفحة الرئيسية</span>
+                </a>
+                <a href="teachers.html" class="sidebar-link" data-page="teachers" id="nav-teachers-mobile">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <span>المعلمين</span>
+                </a>
+                <a href="students.html" class="sidebar-link" data-page="students" id="nav-students-mobile">
+                    <i class="fas fa-user-graduate"></i>
+                    <span>الطلاب</span>
+                </a>
+                <a href="staff.html" class="sidebar-link" data-page="staff" id="nav-staff-mobile">
+                    <i class="fas fa-users"></i>
+                    <span>الموظفين</span>
+                </a>
+                <a href="subjects.html" class="sidebar-link" data-page="subjects" id="nav-subjects-mobile">
+                    <i class="fas fa-book"></i>
+                    <span>المواد</span>
+                </a>
+                <a href="accounts.html" class="sidebar-link active" data-page="accounts" id="nav-accounts-mobile">
+                    <i class="fas fa-wallet"></i>
+                    <span>الحسابات</span>
+                </a>
+            </nav>
+        </div>
+    </aside>
+    
+    <main class="lg:mr-48 max-w-7xl mx-auto px-4 py-8 mt-16 content-container" style="position: relative; z-index: 10; transition: opacity 0.3s ease, transform 0.3s ease; display: block !important; visibility: visible !important;">
+        <div class="no-print mb-6">
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">إدارة الحسابات</h1>
+        </div>
+        
+        <!-- قسم أقساط المراحل -->
+        <div class="card mb-6 no-print hover:shadow-xl transition-shadow duration-300">
+            <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-200">
+                <h2 class="text-xl font-bold text-gray-900">أقساط المراحل الدراسية</h2>
+                <button onclick="openAddFeeModal()" class="btn-add bg-purple-600 p-2 text-white rounded-md">
+                    <i class="fas fa-plus ml-2"></i>
+                    إضافة قسط جديد
+                </button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gradient-to-r from-purple-50 to-blue-50">
+                        <tr>
+                            <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المرحلة الدراسية</th>
+                            <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">مبلغ القسط</th>
+                            <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الوصف</th>
+                            <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="feesTableBody" class="bg-white divide-y divide-gray-200">
+                        <tr>
+                            <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">جاري التحميل...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- قسم حسابات الطلاب -->
+        <div class="card mb-6 hover:shadow-xl transition-shadow duration-300">
+            <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-200 no-print">
+                <h2 class="text-xl font-bold text-gray-900">حسابات الطلاب</h2>
+                <div class="flex gap-2">
+                    <button onclick="openAddStudentAccountModal()" class="btn-primary">
+                        <i class="fas fa-plus ml-1"></i> إضافة قسط طالب
+                    </button>
+                    <input
+                        id="searchStudent"
+                        type="text"
+                        placeholder="بحث عن طالب..."
+                        class="input-field"
+                    />
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gradient-to-r from-purple-50 to-blue-50">
+                        <tr>
+                            <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">اسم الطالب</th>
+                            <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الصف</th>
+                            <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">مبلغ القسط</th>
+                            <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المدفوع</th>
+                            <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المتبقي</th>
+                            <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider no-print">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentsAccountsTableBody" class="bg-white divide-y divide-gray-200">
+                        <tr>
+                            <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">جاري التحميل...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- نافذة إضافة/تعديل قسط -->
+        <div id="feeModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 no-print">
+            <div class="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto shadow-xl">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 id="feeModalTitle" class="text-2xl font-bold text-gray-900">إضافة قسط جديد</h2>
+                    <button onclick="closeFeeModal()" class="text-gray-400 hover:text-gray-600 text-2xl font-bold" type="button" title="إغلاق">
+                        &times;
+                    </button>
+                </div>
+                <form id="feeForm" onsubmit="saveFee(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">المرحلة الدراسية <span class="text-red-500">*</span></label>
+                        <select id="feeClass" required class="input-field">
+                            <option value="">اختر المرحلة</option>
+                            <option value="الصف الأول">الصف الأول</option>
+                            <option value="الصف الثاني">الصف الثاني</option>
+                            <option value="الصف الثالث">الصف الثالث</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">مبلغ القسط <span class="text-red-500">*</span></label>
+                        <input id="feeAmount" type="number" min="0" step="0.01" required class="input-field" placeholder="مثال: 5000" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">الوصف</label>
+                        <textarea id="feeDescription" class="input-field" rows="3" placeholder="وصف القسط..."></textarea>
+                    </div>
+                    <div class="flex justify-end gap-3 pt-4 border-t">
+                        <button type="button" onclick="closeFeeModal()" class="btn-secondary px-6 py-2">إلغاء</button>
+                        <button type="submit" class="btn-primary px-6 py-2">حفظ</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- نافذة إضافة دفعة -->
+        <div id="paymentModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 no-print">
+            <div class="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto shadow-xl">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 id="paymentModalTitle" class="text-2xl font-bold text-gray-900">إضافة دفعة</h2>
+                    <button onclick="closePaymentModal()" class="text-gray-400 hover:text-gray-600 text-2xl font-bold" type="button" title="إغلاق">
+                        &times;
+                    </button>
+                </div>
+                <form id="paymentForm" onsubmit="savePayment(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">اسم الطالب</label>
+                        <input id="paymentStudentName" type="text" readonly class="input-field bg-gray-100" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">مبلغ الدفعة <span class="text-red-500">*</span></label>
+                        <input id="paymentAmount" type="number" min="0" step="0.01" required class="input-field" placeholder="مثال: 1000" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">تاريخ الدفعة <span class="text-red-500">*</span></label>
+                        <input id="paymentDate" type="date" required class="input-field" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">طريقة الدفع</label>
+                        <select id="paymentMethod" class="input-field">
+                            <option value="نقد">نقد</option>
+                            <option value="تحويل بنكي">تحويل بنكي</option>
+                            <option value="شيك">شيك</option>
+                            <option value="بطاقة">بطاقة</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">ملاحظات</label>
+                        <textarea id="paymentNotes" class="input-field" rows="3" placeholder="ملاحظات..."></textarea>
+                    </div>
+                    <div class="flex justify-end gap-3 pt-4 border-t">
+                        <button type="button" onclick="closePaymentModal()" class="btn-secondary px-6 py-2">إلغاء</button>
+                        <button type="submit" class="btn-primary px-6 py-2">حفظ</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- نافذة إضافة قسط طالب -->
+        <div id="studentAccountModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 no-print">
+            <div class="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto shadow-xl">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 id="studentAccountModalTitle" class="text-2xl font-bold text-gray-900">إضافة قسط طالب</h2>
+                    <button onclick="closeStudentAccountModal()" class="text-gray-400 hover:text-gray-600 text-2xl font-bold" type="button" title="إغلاق">
+                        &times;
+                    </button>
+                </div>
+                <form id="studentAccountForm" onsubmit="saveStudentAccount(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">الصف <span class="text-red-500">*</span></label>
+                        <select id="studentAccountClass" required class="input-field">
+                            <option value="">اختر الصف</option>
+                            <option value="الصف الأول">الصف الأول</option>
+                            <option value="الصف الثاني">الصف الثاني</option>
+                            <option value="الصف الثالث">الصف الثالث</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">اسم الطالب <span class="text-red-500">*</span></label>
+                        <input 
+                            id="studentAccountName" 
+                            type="text" 
+                            required 
+                            class="input-field" 
+                            placeholder="أدخل اسم الطالب أو اختر من القائمة"
+                            list="studentAccountNameList"
+                        />
+                        <datalist id="studentAccountNameList">
+                            <!-- سيتم ملؤها تلقائياً -->
+                        </datalist>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">القسط <span class="text-red-500">*</span></label>
+                        <select id="studentAccountFee" required class="input-field">
+                            <option value="">اختر القسط</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">المبلغ المدفوع <span class="text-red-500">*</span></label>
+                        <input id="studentAccountPaid" type="number" min="0" step="0.01" required class="input-field" placeholder="مثال: 1000" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">المتبقي للقسط <span class="text-red-500">*</span></label>
+                        <input id="studentAccountRemaining" type="number" min="0" step="0.01" required class="input-field" placeholder="مثال: 4000" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">الملاحظات</label>
+                        <textarea id="studentAccountNotes" class="input-field" rows="3" placeholder="ملاحظات..."></textarea>
+                    </div>
+                    <div class="flex justify-end gap-3 pt-4 border-t">
+                        <button type="button" onclick="closeStudentAccountModal()" class="btn-secondary px-6 py-2">إلغاء</button>
+                        <button type="submit" class="btn-primary px-6 py-2">حفظ</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- نافذة التقرير -->
+        <div id="reportModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div class="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-xl print-section">
+                <div class="flex justify-between items-center mb-4 no-print border-b pb-4" style="display: flex !important; visibility: visible !important;">
+                    <h2 class="text-2xl font-bold text-gray-900">تقرير حساب الطالب</h2>
+                    <div class="flex gap-3 items-center" style="display: flex !important; visibility: visible !important; z-index: 100;">
+                        <button onclick="printReport(); return false;" class="px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-all duration-200 text-sm font-semibold cursor-pointer shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center justify-center gap-2 min-w-[120px]" type="button" title="طباعة التقرير" style="display: inline-flex !important; visibility: visible !important; opacity: 1 !important; position: relative !important; z-index: 100 !important; background-color: #2563eb !important; color: white !important;">
+                            <i class="fas fa-print"></i>
+                            <span>طباعة</span>
+                        </button>
+                        <button onclick="closeReportModal(); return false;" class="text-gray-400 hover:text-gray-600 text-3xl font-bold leading-none w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors" type="button" title="إغلاق" style="display: flex !important; visibility: visible !important;">
+                            &times;
+                        </button>
+                    </div>
+                </div>
+                <div id="reportContent">
+                    <!-- محتوى التقرير -->
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/data-manager.js"></script>
+    <script src="js/page-init.js"></script>
+    <script src="js/router.js"></script>
+    <script src="js/accounts.js"></script>
+    <script>
+        // إدارة السايد بار للشاشات الصغيرة
+        function initMobileSidebar() {
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const mobileSidebar = document.getElementById('mobileSidebar');
+            const closeSidebar = document.getElementById('closeSidebar');
+            
+            if (sidebarToggle && mobileSidebar) {
+                sidebarToggle.addEventListener('click', function() {
+                    mobileSidebar.classList.remove('translate-x-full');
+                });
+            }
+            
+            if (closeSidebar && mobileSidebar) {
+                closeSidebar.addEventListener('click', function() {
+                    mobileSidebar.classList.add('translate-x-full');
+                });
+            }
+            
+            // إغلاق السايد بار عند النقر على رابط
+            const mobileLinks = mobileSidebar?.querySelectorAll('.sidebar-link');
+            if (mobileLinks) {
+                mobileLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        mobileSidebar.classList.add('translate-x-full');
+                    });
+                });
+            }
+        }
+
+        // تحديد الصفحة النشطة في السايد بار
+        function setActiveNavItem() {
+            const currentPage = window.location.pathname.split('/').pop() || 'accounts.html';
+            const navLinks = document.querySelectorAll('.sidebar-link');
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                const href = link.getAttribute('href');
+                if (href === currentPage || (currentPage === '' && href === 'index.html')) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            setActiveNavItem();
+            initMobileSidebar();
+        });
+    </script>
+</body>
+</html>

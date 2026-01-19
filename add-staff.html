@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إضافة موظف جديد - نظام إدارة المدرسة</title>
+    <link rel="stylesheet" href="css/main.min.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(to bottom, #f3f4f6, #e5e7eb);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        .form-container {
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .form-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        .form-header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #9333ea;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .close-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 0.5rem;
+            border: none;
+            background: #f3f4f6;
+            color: #6b7280;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .close-btn:hover {
+            background: #e5e7eb;
+            color: #374151;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+        .form-group label .required {
+            color: #ef4444;
+        }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #9333ea;
+            box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .permissions-section {
+            border-top: 1px solid #e5e7eb;
+            padding-top: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        .permissions-section h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 1rem;
+        }
+        .permissions-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+        .permission-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .permission-item input[type="checkbox"] {
+            width: auto;
+            cursor: pointer;
+        }
+        .permission-item label {
+            margin: 0;
+            font-weight: normal;
+            cursor: pointer;
+        }
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+        }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+        .btn-primary {
+            background: #9333ea;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #7e22ce;
+        }
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+        }
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .success-message {
+            background: #10b981;
+            color: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+        .error-message {
+            background: #ef4444;
+            color: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+        @media (max-width: 640px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .permissions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <div class="form-header">
+            <h1>
+                <i class="fas fa-users"></i>
+                إضافة موظف جديد
+            </h1>
+            <button class="close-btn" onclick="window.close()" title="إغلاق">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div id="successMessage" class="success-message">
+            <i class="fas fa-check-circle"></i> تم إضافة الموظف بنجاح!
+        </div>
+
+        <div id="errorMessage" class="error-message">
+            <i class="fas fa-exclamation-circle"></i> <span id="errorText"></span>
+        </div>
+
+        <form id="staffForm" class="space-y-4">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>الاسم <span class="required">*</span></label>
+                    <input id="staffName" type="text" required placeholder="أدخل اسم الموظف" />
+                </div>
+
+                <div class="form-group">
+                    <label>المنصب <span class="required">*</span></label>
+                    <select id="staffPosition" required>
+                        <option value="">اختر المنصب</option>
+                        <option value="مدير">مدير</option>
+                        <option value="محاسب">محاسب</option>
+                        <option value="سكرتير">سكرتير</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>البريد الإلكتروني <span class="required">*</span></label>
+                    <input id="staffEmail" type="email" required placeholder="example@school.com" />
+                </div>
+
+                <div class="form-group">
+                    <label>الهاتف <span class="required">*</span></label>
+                    <input id="staffPhone" type="tel" required placeholder="05xxxxxxxx" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    كلمة المرور
+                    <span style="font-size: 0.75rem; color: #6b7280; font-weight: normal;">(اتركه فارغاً للاستخدام الافتراضي: 123456)</span>
+                </label>
+                <input id="staffPassword" type="password" placeholder="الافتراضي: 123456" />
+            </div>
+
+            <div class="permissions-section">
+                <h3>الصلاحيات</h3>
+                <div class="permissions-grid">
+                    <div class="permission-item">
+                        <input type="checkbox" id="perm_manage_students" />
+                        <label for="perm_manage_students">إدارة الطلاب</label>
+                    </div>
+                    <div class="permission-item">
+                        <input type="checkbox" id="perm_manage_teachers" />
+                        <label for="perm_manage_teachers">إدارة المعلمين</label>
+                    </div>
+                    <div class="permission-item">
+                        <input type="checkbox" id="perm_manage_subjects" />
+                        <label for="perm_manage_subjects">إدارة المواد</label>
+                    </div>
+                    <div class="permission-item">
+                        <input type="checkbox" id="perm_manage_staff" />
+                        <label for="perm_manage_staff">إدارة الموظفين</label>
+                    </div>
+                    <div class="permission-item">
+                        <input type="checkbox" id="perm_view_reports" />
+                        <label for="perm_view_reports">عرض التقارير</label>
+                    </div>
+                    <div class="permission-item">
+                        <input type="checkbox" id="perm_manage_finances" />
+                        <label for="perm_manage_finances">إدارة المالية</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="window.close()">إلغاء</button>
+                <button type="submit" class="btn btn-primary" id="submitBtn">
+                    <i class="fas fa-save"></i> حفظ
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        const form = document.getElementById('staffForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const successMessage = document.getElementById('successMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+
+        function showSuccess() {
+            successMessage.style.display = 'block';
+            errorMessage.style.display = 'none';
+            form.reset();
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+                window.close();
+            }, 2000);
+        }
+
+        function showError(message) {
+            errorText.textContent = message;
+            errorMessage.style.display = 'block';
+            successMessage.style.display = 'none';
+        }
+
+        function hideMessages() {
+            successMessage.style.display = 'none';
+            errorMessage.style.display = 'none';
+        }
+
+        // تحديث الصلاحيات الافتراضية عند تغيير المنصب
+        document.getElementById('staffPosition').addEventListener('change', function() {
+            const position = this.value;
+            // يمكن إضافة منطق لتحديد الصلاحيات الافتراضية حسب المنصب
+        });
+
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            hideMessages();
+
+            const originalText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
+
+            try {
+                const name = document.getElementById('staffName').value.trim();
+                const position = document.getElementById('staffPosition').value;
+                const email = document.getElementById('staffEmail').value.trim();
+                const phone = document.getElementById('staffPhone').value.trim();
+                const password = document.getElementById('staffPassword').value;
+
+                // التحقق من الحقول المطلوبة
+                if (!name || !position || !email || !phone) {
+                    showError('يرجى ملء جميع الحقول المطلوبة');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                    return;
+                }
+
+                // جمع الصلاحيات
+                const permissions = {
+                    manage_students: document.getElementById('perm_manage_students').checked,
+                    manage_teachers: document.getElementById('perm_manage_teachers').checked,
+                    manage_subjects: document.getElementById('perm_manage_subjects').checked,
+                    manage_staff: document.getElementById('perm_manage_staff').checked,
+                    view_reports: document.getElementById('perm_view_reports').checked,
+                    manage_finances: document.getElementById('perm_manage_finances').checked
+                };
+
+                const formData = {
+                    name,
+                    position,
+                    email,
+                    phone,
+                    permissions,
+                    password: password || '123456'
+                };
+
+                const response = await staffAPI.create(formData);
+
+                if (response && response.success) {
+                    showSuccess();
+                    // إرسال رسالة للصفحة الأصلية لتحديث القائمة
+                    if (window.opener) {
+                        window.opener.postMessage({ type: 'staffAdded', data: response.data }, '*');
+                    }
+                } else {
+                    const errorMsg = response?.message || 'حدث خطأ أثناء إضافة الموظف';
+                    showError(errorMsg);
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
+            } catch (error) {
+                console.error('Error saving staff:', error);
+                showError('حدث خطأ أثناء إضافة الموظف: ' + (error.message || 'خطأ غير معروف'));
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
+        });
+
+        // إغلاق عند الضغط على Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                window.close();
+            }
+        });
+    </script>
+</body>
+</html>

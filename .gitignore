@@ -1,0 +1,43 @@
+# Nuxt dev/build outputs
+.output
+.data
+.nuxt
+.nitro
+.cache
+dist
+
+# Node dependencies
+node_modules
+package-lock.json
+
+# Logs
+logs
+*.log
+
+# Misc
+.DS_Store
+.fleet
+.idea
+*.swp
+*.swo
+
+# Local env files
+.env
+.env.local
+
+# ملفات قاعدة البيانات الحساسة
+api/config.php
+
+# ملفات قاعدة البيانات
+*.sql
+*.db
+*.sqlite
+
+# ملفات مؤقتة
+*.tmp
+*.temp
+*.cache
+
+# ملفات النظام
+Thumbs.db
+desktop.ini

@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة المدرسة - إدارة الطلاب</title>
+    <link rel="stylesheet" href="css/main.min.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ============================================
+           تحسينات خانة البحث
+           ============================================ */
+        
+        /* جعل الأيقونة داخل خانة البحث */
+        .search-input-wrapper {
+            position: relative;
+        }
+        
+        .search-input-wrapper .search-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #d1d5db;
+            pointer-events: none;
+            z-index: 10;
+            font-size: 0.75rem;
+        }
+        
+        .search-input-wrapper .input-field {
+            padding-right: 1rem !important;
+            font-size: 0.8125rem !important; /* أصغر قليلاً */
+        }
+        
+        #searchQuery:focus {
+            outline: none;
+            border-color: rgb(147, 51, 234);
+            box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
+        }
+        
+        /* ============================================
+           تحسينات الجدول - تصميم مشابه للصورة
+           ============================================ */
+        
+        #studentsTable {
+            width: 100% !important;
+            border-collapse: collapse !important;
+            direction: rtl !important;
+            background-color: white;
+            table-layout: auto;
+            font-size: 0.875rem;
+            display: table !important;
+            visibility: visible !important;
+        }
+        
+        /* التأكد من أن الجدول يبقى ثابتاً وظاهراً */
+        #studentsTable,
+        #studentsTable thead,
+        #studentsTable tbody,
+        #studentsTable tr,
+        #studentsTable th,
+        #studentsTable td {
+            display: table !important;
+            visibility: visible !important;
+        }
+        
+        #studentsTable thead {
+            display: table-header-group !important;
+        }
+        
+        #studentsTable tbody {
+            display: table-row-group !important;
+        }
+        
+        #studentsTableBody {
+            display: table-row-group !important;
+            visibility: visible !important;
+        }
+        
+        /* التأكد من أن حاوية الجدول ظاهرة */
+        .w-full.overflow-x-auto {
+            display: block !important;
+            visibility: visible !important;
+        }
+        
+        div:has(#studentsTable) {
+            display: block !important;
+            visibility: visible !important;
+        }
+        
+        /* التأكد من أن الجدول هو الوحيد الظاهر - إخفاء أي جداول أخرى نهائياً */
+        table:not(#studentsTable) {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            height: 0 !important;
+            width: 0 !important;
+            overflow: hidden !important;
+        }
+        
+        /* التأكد من أن studentsTable هو الجدول الوحيد والوحيد الظاهر */
+        #studentsTable {
+            display: table !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        /* إخفاء أي عناصر جدول أخرى */
+        .card table:not(#studentsTable),
+        main table:not(#studentsTable),
+        body table:not(#studentsTable) {
+            display: none !important;
+            visibility: hidden !important;
+        }
+        
+        #studentsTable thead,
+        #studentsTable tbody,
+        #studentsTable tr {
+            display: table-row !important;
+        }
+        
+        #studentsTable thead {
+            background-color: #f3f4f6 !important;
+            display: table-header-group !important;
+        }
+        
+        #studentsTable tbody {
+            display: table-row-group !important;
+        }
+        
+        /* عناوين الجدول */
+        #studentsTable thead th {
+            padding: 0.875rem 1rem !important;
+            text-align: right !important;
+            direction: rtl !important;
+            font-size: 0.75rem !important;
+            font-weight: 600 !important;
+            color: #374151 !important;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid #e5e7eb !important;
+            vertical-align: middle !important;
+            display: table-cell !important;
+            white-space: nowrap;
+        }
+        
+        #studentsTable thead th:last-child {
+            text-align: right !important;
+            direction: rtl !important;
+        }
+        
+        /* صفوف الجدول */
+        #studentsTable tbody tr {
+            border-bottom: 1px solid #e5e7eb;
+            transition: background-color 0.15s ease-in-out;
+            display: table-row !important;
+        }
+        
+        #studentsTable tbody tr:hover {
+            background-color: #f9fafb !important;
+        }
+        
+        #studentsTable tbody tr:last-child {
+            border-bottom: none;
+        }
+        
+        /* خلايا الجدول */
+        #studentsTable tbody td {
+            padding: 1rem !important;
+            text-align: right !important;
+            font-size: 0.875rem !important;
+            color: #4b5563;
+            vertical-align: middle !important;
+            display: table-cell !important;
+        }
+        
+        /* عمود الطالب - مع دائرة الحرف الأولي */
+        #studentsTable tbody td:first-child {
+            font-weight: 500 !important;
+            color: #111827 !important;
+        }
+        
+        .student-name-cell {
+            display: flex !important;
+            align-items: center !important;
+            gap: 0.75rem !important; 
+        }
+        
+        .student-avatar {
+            width: 2.5rem !important;
+            height: 2.5rem !important;
+            border-radius: 50% !important;
+            background: linear-gradient(135deg, #e9d5ff 0%, #ddd6fe 100%) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-weight: 600 !important;
+            font-size: 0.875rem !important;
+            color: #7c3aed !important;
+            flex-shrink: 0 !important;
+        }
+        
+        .student-info {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 0.25rem !important;
+        }
+        
+        .student-name {
+            font-weight: 500 !important;
+            color: #111827 !important;
+            font-size: 0.875rem !important;
+        }
+        
+        .student-badge {
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 0.25rem !important;
+            padding: 0.125rem 0.5rem !important;
+            background-color: #dbeafe !important;
+            color: #1e40af !important;
+            border-radius: 0.375rem !important;
+            font-size: 0.75rem !important;
+            font-weight: 500 !important;
+            margin-top: 0.125rem !important;
+        }
+        
+        .student-badge i {
+            font-size: 0.625rem !important;
+            color: #3b82f6 !important;
+        }
+        
+        /* عمود الاتصال - مع أيقونة الهاتف */
+        .contact-cell {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 0.25rem !important;
+        }
+        
+        .contact-name {
+            font-weight: 500 !important;
+            color: #374151 !important;
+        }
+        
+        .contact-phone {
+            display: flex !important;
+            align-items: center !important;
+            gap: 0.375rem !important;
+            color: #6b7280 !important;
+            font-size: 0.8125rem !important;
+        }
+        
+        .contact-phone i {
+            font-size: 0.75rem !important;
+            color: #9ca3af !important;
+        }
+        
+        /* عمود الإجراءات */
+        #studentsTable tbody td:last-child {
+            text-align: right !important;
+        }
+        
+        /* ============================================
+           تحسينات الأزرار في الجدول - تصميم مشابه للصورة
+           ============================================ */
+        
+        .actions-group {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 0.5rem !important;
+        }
+        
+        /* أزرار الإجراءات - أيقونات فقط */
+        #studentsTableBody button {
+            min-width: 32px !important;
+            width: 32px !important;
+            height: 32px !important;
+            padding: 0 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            flex-shrink: 0;
+            border-radius: 6px !important;
+            font-size: 0.875rem !important;
+            border: none !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+        }
+        
+        /* إخفاء النص في الأزرار - أيقونات فقط */
+        #studentsTableBody button i {
+            margin: 0 !important;
+        }
+        
+        #studentsTableBody button span {
+            display: none !important;
+        }
+        
+        /* زر التعديل - بنفسجي */
+        .btn-edit-icon,
+        #studentsTableBody button[onclick*="editStudent"] {
+            background-color: rgba(147, 51, 234, 0.1) !important;
+            color: rgb(147, 51, 234) !important;
+        }
+        
+        .btn-edit-icon:hover,
+        #studentsTableBody button[onclick*="editStudent"]:hover {
+            background-color: rgba(147, 51, 234, 0.2) !important;
+            transform: scale(1.05) !important;
+        }
+        
+        /* زر الحذف - أحمر */
+        .btn-delete-icon,
+        #studentsTableBody button[onclick*="deleteStudent"] {
+            background-color: rgba(220, 38, 38, 0.1) !important;
+            color: rgb(220, 38, 38) !important;
+        }
+        
+        .btn-delete-icon:hover,
+        #studentsTableBody button[onclick*="deleteStudent"]:hover {
+            background-color: rgba(220, 38, 38, 0.2) !important;
+            transform: scale(1.05) !important;
+        }
+        
+        /* زر الملف الشخصي - أخضر */
+        .btn-view-icon,
+        #studentsTableBody button[onclick*="viewStudent"] {
+            background-color: rgba(34, 197, 94, 0.1) !important;
+            color: rgb(34, 197, 94) !important;
+        }
+        
+        .btn-view-icon:hover,
+        #studentsTableBody button[onclick*="viewStudent"]:hover {
+            background-color: rgba(34, 197, 94, 0.2) !important;
+            transform: scale(1.05) !important;
+        }
+        
+        /* ============================================
+           تحسينات عامة
+           ============================================ */
+        
+        /* تحسين Card */
+        .card {
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        }
+        
+        /* تحسين النصوص */
+        table td {
+            word-break: break-word;
+        }
+        
+        table td:first-child {
+            font-weight: 500;
+        }
+        
+        /* منع التمرير الأفقي */
+        .overflow-x-auto {
+            overflow-x: visible;
+        }
+        
+        /* ============================================
+           زر إضافة طالب جديد
+           ============================================ */
+        
+        .btn-add {
+            background-color: rgb(147, 51, 234) !important; /* bg-purple-600 */
+            color: #ffffff !important;
+            border: none !important;
+            transition: all 0.2s ease !important;
+            padding: 0.625rem 1.25rem !important;
+            border-radius: 0.5rem !important;
+            font-weight: 500 !important;
+        }
+        
+        .btn-add:hover {
+            background-color: rgb(147, 51, 234) !important; /* hover:bg-purple-600 */
+            color: #ffffff !important;
+        }
+        
+        .btn-add:active {
+            background-color: rgb(126, 34, 206) !important; /* active:bg-purple-700 */
+        }
+        
+        .btn-add i,
+        .btn-add span {
+            color: #ffffff !important;
+        }
+        
+        /* ============================================
+           نافذة إضافة/تعديل الطالب
+           ============================================ */
+        
+        #studentModal {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+        }
+        
+        #studentModal.hidden {
+            display: none !important;
+        }
+        
+        /* التأكد من أن النافذة تظهر عندما لا تكون hidden */
+        #studentModal:not(.hidden) {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        #studentModal:not(.hidden) > div {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        #studentModal:not(.hidden) * {
+            visibility: visible !important;
+        }
+        
+        /* التأكد من أن النافذة المنبثقة ومحتواها مرئيان */
+        #studentModal:not(.hidden) .bg-white {
+            background-color: white !important;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            z-index: 52 !important;
+        }
+        
+        #studentModal:not(.hidden) form,
+        #studentModal:not(.hidden) form > div,
+        #studentModal:not(.hidden) label,
+        #studentModal:not(.hidden) input,
+        #studentModal:not(.hidden) select,
+        #studentModal:not(.hidden) button {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        #studentModal:not(.hidden) .flex {
+            display: flex !important;
+        }
+        
+        #studentModal > div {
+            background-color: white !important;
+            position: relative !important;
+            z-index: 51 !important;
+            width: 500px !important;
+            max-width: 90vw !important;
+            height: auto !important;
+            max-height: 85vh !important;
+            border-radius: 1rem !important;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        #studentModal > div > * {
+            display: block !important;
+            visibility: visible !important;
+        }
+        
+        #studentModal > div > div {
+            display: flex !important;
+            visibility: visible !important;
+        }
+        
+        #studentForm {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        #studentForm > div {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        #studentForm label {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        #studentForm input,
+        #studentForm select {
+            display: block !important;
+            visibility: visible !important;
+            width: 100% !important;
+            opacity: 1 !important;
+        }
+        
+        #studentModal h2,
+        #studentModal button {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        /* تنسيق أزرار الإضافة في النافذة المنبثقة */
+        #studentModal #studentForm button[type="submit"],
+        #studentModal #studentForm button[type="button"] {
+            border-radius: 0.5rem !important;
+            padding: 0.5rem !important;
+            color: white !important;
+        }
+        
+        #studentModal #studentForm button[type="submit"] span,
+        #studentModal #studentForm button[type="button"],
+        #studentModal #studentForm button[type="button"] * {
+            color: white !important;
+        }
+        
+        /* تغيير لون خلفية زر الإلغاء ليكون مرئياً مع النص الأبيض */
+        #studentModal #studentForm button.btn-secondary {
+            background-color: rgb(107, 114, 128) !important;
+        }
+        
+        #studentModal #studentForm button.btn-secondary:hover {
+            background-color: rgb(75, 85, 99) !important;
+        }
+        
+        /* ============================================
+           نافذة عرض الملف الشخصي
+           ============================================ */
+        
+        #viewStudentModal {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+        }
+        
+        #viewStudentModal.hidden {
+            display: none !important;
+        }
+        
+        #viewStudentModal > div {
+            background-color: white !important;
+            position: relative !important;
+            z-index: 51 !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- الهيدر الثابت -->
+    <nav id="mainHeader" class="bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-200 fixed top-0 left-0 right-0 z-50" style="position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; z-index: 9999 !important; width: 100% !important; display: block !important; visibility: visible !important; opacity: 1 !important;">
+        <div class="max-w-7xl mx-auto px-4" style="padding-left: 1rem !important; padding-right: 1rem !important;">
+            <div class="flex justify-between items-center h-16">
+                <!-- اسم المشروع -->
+                <div class="flex items-center">
+                    <a href="index.html" class="text-lg font-bold" style="font-size: 1.125rem !important; color: rgb(147, 51, 234);">
+                        نظام إدارة المدرسة
+                    </a>
+                </div>
+                
+                <!-- اسم المستخدم وصورته والإعدادات -->
+                <div class="flex items-center space-x-4 space-x-reverse gap-4">
+                    <!-- معلومات المستخدم -->
+                    <div class="flex items-center gap-2.5">
+                        <div class="text-right">
+                            <p class="text-xs font-medium text-gray-700" id="userName" style="font-size: 0.75rem !important; line-height: 1.2;">علي أحمد</p>
+                            <p class="text-xs text-gray-500" id="userPosition" style="font-size: 0.6875rem !important; line-height: 1.2;">مدير</p>
+                        </div>
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white font-bold text-xs shadow-sm overflow-hidden" id="userAvatar" style="flex-shrink: 0;">
+                            <img src="https://ui-avatars.com/api/?name=علي+أحمد&background=9333ea&color=fff&size=128" alt="صورة المستخدم" class="w-full h-full object-cover" id="userAvatarImg">
+                        </div>
+                    </div>
+                    
+                    <!-- زر الإعدادات -->
+                    <button onclick="openSettings()" class="w-10 h-10 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-purple-600 transition-all duration-200 relative flex items-center justify-center" title="الإعدادات">
+                        <i class="fas fa-cog" style="font-size: 1.25rem !important;"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <main class="lg:mr-48 max-w-7xl mx-auto px-6 py-6 mt-16" style="margin-top: 4rem !important;">
+        <div class="w-full">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl font-bold text-gray-900">إدارة الطلاب</h1>
+                <button type="button" onclick="openAddModal(); return false;" class="btn-add bg-purple-600 p-2 text-white rounded-md">
+                    <i class="fas fa-plus ml-2"></i>
+                    إضافة طالب جديد
+                </button>
+            </div>
+            
+            <div class="card">
+                <div class="mb-6 flex justify-between items-center gap-4">
+                    <div class="search-input-wrapper flex-1 max-w-md" style="order: 1;">
+                        <input
+                            id="searchQuery"
+                            type="text"
+                            placeholder="بحث عن طالب برقم القيد أو الاسم..."
+                            class="input-field"
+                            style="height: 40px;"
+                        >
+                    </div>
+                </div>
+                
+                <div class="w-full overflow-x-auto" style="display: block !important; visibility: visible !important;">
+                    <table id="studentsTable" class="w-full" dir="rtl" style="border-collapse: collapse; background-color: white; table-layout: auto; display: table !important; visibility: visible !important;">
+                        <thead>
+                            <tr>
+                                <th>الاسم</th>
+                                <th>رقم الطالب</th>
+                                <th>الصف</th>
+                                <th>العمر</th>
+                                <th>البريد الإلكتروني</th>
+                                <th>الهاتف</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentsTableBody">
+                            <tr>
+                                <td colspan="7" class="text-center" style="padding: 3rem 1.5rem;">
+                                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                                        <svg class="animate-spin h-8 w-8 text-blue-600 mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        <span class="text-sm font-medium text-gray-500">جاري تحميل بيانات الطلاب...</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Add/Edit Modal -->
+            <div id="studentModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onclick="if(event.target === this) closeModal()">
+                <div class="bg-white rounded-lg p-6 overflow-y-auto shadow-xl" style="width: 500px; max-width: 90vw; max-height: 85vh;">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 id="modalTitle" class="text-2xl font-bold text-gray-900">إضافة طالب جديد</h2>
+                        <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 text-2xl font-bold" type="button" title="إغلاق">
+                            &times;
+                        </button>
+                    </div>
+                    <form id="studentForm" onsubmit="saveStudent(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">الاسم <span class="text-red-500">*</span></label>
+                            <input id="studentName" type="text" required class="input-field" placeholder="أدخل اسم الطالب" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">الصف <span class="text-red-500">*</span></label>
+                            <select id="studentClass" required class="input-field">
+                                <option value="">اختر الصف</option>
+                                <option value="الصف الأول">الصف الأول</option>
+                                <option value="الصف الثاني">الصف الثاني</option>
+                                <option value="الصف الثالث">الصف الثالث</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">العمر <span class="text-red-500">*</span></label>
+                            <input id="studentAge" type="number" required class="input-field" placeholder="أدخل العمر" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">البريد الإلكتروني <span class="text-red-500">*</span></label>
+                            <input id="studentEmail" type="email" required class="input-field" placeholder="example@school.com" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">الهاتف <span class="text-red-500">*</span></label>
+                            <input id="studentPhone" type="tel" required class="input-field" placeholder="05xxxxxxxx" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">رقم الطالب</label>
+                            <input id="studentNumber" type="text" class="input-field" placeholder="مثال: STU001" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                كلمة المرور
+                                <span id="passwordHint" class="text-xs text-gray-500">(اتركه فارغاً للاحتفاظ بالكلمة الحالية)</span>
+                            </label>
+                            <input id="studentPassword" type="password" class="input-field" placeholder="الافتراضي: 123456" />
+                        </div>
+                        <div class="flex justify-end gap-3 pt-4 border-t">
+                            <button type="button" onclick="closeModal()" class="btn-secondary">إلغاء</button>
+                            <button type="submit" class="btn-primary">
+                                <span id="submitButtonText">حفظ</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- View Student Profile Modal -->
+            <div id="viewStudentModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onclick="if(event.target === this) closeViewModal()">
+                <div class="bg-white rounded-lg shadow-xl overflow-hidden" style="width: 600px; max-width: 90vw; max-height: 90vh; overflow-y: auto;">
+                    <div class="bg-gradient-to-r from-purple-600 to-purple-700 p-6 text-white">
+                        <div class="flex justify-between items-start">
+                            <div class="flex items-center gap-4">
+                                <div id="viewStudentAvatar" class="w-20 h-20 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-3xl font-bold border-4 border-white/30">
+                                    <span id="viewStudentInitial">ط</span>
+                                </div>
+                                <div>
+                                    <h2 id="viewStudentName" class="text-2xl font-bold mb-1">اسم الطالب</h2>
+                                    <p id="viewStudentClass" class="text-purple-100 text-sm">الصف</p>
+                                </div>
+                            </div>
+                            <button onclick="closeViewModal()" class="text-white hover:text-gray-200 text-2xl font-bold" type="button" title="إغلاق">
+                                &times;
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+                                <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                                    <i class="fas fa-id-card text-indigo-600"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm text-gray-500 mb-1">رقم الطالب</p>
+                                    <p id="viewStudentId" class="font-medium text-gray-900">-</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+                                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                    <i class="fas fa-graduation-cap text-blue-600"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm text-gray-500 mb-1">الصف</p>
+                                    <p id="viewStudentClassInfo" class="font-medium text-gray-900">-</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+                                <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                                    <i class="fas fa-birthday-cake text-green-600"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm text-gray-500 mb-1">العمر</p>
+                                    <p id="viewStudentAge" class="font-medium text-gray-900">-</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+                                <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                                    <i class="fas fa-envelope text-purple-600"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm text-gray-500 mb-1">البريد الإلكتروني</p>
+                                    <p id="viewStudentEmail" class="font-medium text-gray-900">-</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+                                <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                                    <i class="fas fa-phone text-green-600"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm text-gray-500 mb-1">الهاتف</p>
+                                    <p id="viewStudentPhone" class="font-medium text-gray-900">-</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+                                <div class="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center">
+                                    <i class="fas fa-calendar-alt text-pink-600"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm text-gray-500 mb-1">تاريخ التسجيل</p>
+                                    <p id="viewStudentCreatedAt" class="font-medium text-gray-900">-</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6 pt-6 border-t border-gray-200 flex justify-end gap-3">
+                            <button onclick="closeViewModal()" class="btn-secondary px-6 py-2">إغلاق</button>
+                            <button onclick="printStudentProfile()" class="btn-primary px-6 py-2">
+                                <i class="fas fa-print ml-2"></i>
+                                طباعة
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/data-manager.js"></script>
+    <script src="js/page-init.js"></script>
+    <script src="js/router.js"></script>
+    <script src="js/students.js"></script>
+    <script>
+        // معلومات المستخدم (يمكن جلبها من API لاحقاً)
+        let currentUser = {
+            name: 'علي أحمد',
+            position: 'مدير',
+            avatar: 'https://ui-avatars.com/api/?name=علي+أحمد&background=9333ea&color=fff&size=128'
+        };
+
+        // تحديث معلومات المستخدم في الهيدر
+        function updateUserInfo() {
+            const userNameEl = document.getElementById('userName');
+            const userPositionEl = document.getElementById('userPosition');
+            const userAvatarImg = document.getElementById('userAvatarImg');
+            const userAvatar = document.getElementById('userAvatar');
+            
+            if (userNameEl) userNameEl.textContent = currentUser.name;
+            if (userPositionEl) userPositionEl.textContent = currentUser.position;
+            if (userAvatarImg) {
+                userAvatarImg.src = currentUser.avatar;
+                userAvatarImg.alt = currentUser.name;
+                
+                // معالجة خطأ تحميل الصورة
+                userAvatarImg.onerror = function() {
+                    this.style.display = 'none';
+                    if (userAvatar) {
+                        const firstLetter = currentUser.name ? currentUser.name.charAt(0) : 'ع';
+                        userAvatar.innerHTML = '<span style="font-size: 0.75rem;">' + firstLetter + '</span>';
+                    }
+                };
+            }
+        }
+
+        // فتح نافذة الإعدادات
+        function openSettings() {
+            const modal = document.getElementById('settingsModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+            } else {
+                alert('نافذة الإعدادات قيد التطوير');
+            }
+        }
+
+        // إغلاق نافذة الإعدادات
+        function closeSettings() {
+            const modal = document.getElementById('settingsModal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            updateUserInfo();
+            
+            // التأكد من أن دالة openAddModal متاحة
+            const addButton = document.querySelector('button[onclick*="openAddModal"]');
+            if (addButton) {
+                // إزالة onclick القديم وإضافة event listener جديد
+                addButton.removeAttribute('onclick');
+                addButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (typeof openAddModal === 'function') {
+                        openAddModal(e);
+                    } else {
+                        console.error('openAddModal function not found');
+                        // محاولة فتح النافذة يدوياً
+                        const modal = document.getElementById('studentModal');
+                        if (modal) {
+                            modal.classList.remove('hidden');
+                            modal.style.display = 'flex';
+                            modal.style.visibility = 'visible';
+                            modal.style.opacity = '1';
+                        }
+                    }
+                    return false;
+                });
+            }
+            
+            // ربط صندوق البحث
+            const searchInput = document.getElementById('searchQuery');
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    if (typeof renderStudents === 'function') {
+                        renderStudents();
+                    } else {
+                        console.warn('renderStudents function not found');
+                    }
+                });
+                
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        if (typeof renderStudents === 'function') {
+                            renderStudents();
+                        }
+                    }
+                });
+            }
+            
+            // إغلاق نافذة الإعدادات عند النقر خارجها
+            const settingsModal = document.getElementById('settingsModal');
+            if (settingsModal) {
+                settingsModal.addEventListener('click', function(e) {
+                    if (e.target === settingsModal) {
+                        closeSettings();
+                    }
+                });
+                
+                // إغلاق عند الضغط على Escape
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && !settingsModal.classList.contains('hidden')) {
+                        closeSettings();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

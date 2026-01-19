@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة المدرسة - الرئيسية</title>
+    <link rel="stylesheet" href="css/main.min.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ضمان أن العناصر الثابتة تبقى ثابتة دائماً */
+        #mainHeader[data-persistent="true"],
+        nav[data-persistent="true"] {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            z-index: 9999 !important;
+            width: 100% !important;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+        }
+        
+        #mainSidebar[data-persistent="true"],
+        aside[data-persistent="true"]:not(#mobileSidebar) {
+            position: fixed !important;
+            top: 64px !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            z-index: 30 !important;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+            background-color: #ffffff !important;
+            background: #ffffff !important;
+        }
+        
+        /* منع إخفاء العناصر الثابتة */
+        #mainHeader.hidden,
+        #mainSidebar.hidden {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        /* تحسين الانتقال السلس للمحتوى */
+        main[data-spa-content="true"],
+        #mainContent[data-spa-content="true"] {
+            transition: opacity 0.3s ease, transform 0.3s ease !important;
+        }
+        
+        /* التأكد من أن المحتوى لا يتداخل مع العناصر الثابتة */
+        main[data-spa-content="true"],
+        #mainContent[data-spa-content="true"] {
+            margin-top: 64px !important; /* مسافة للهيدر */
+            margin-right: 12rem !important; /* مسافة للسايد بار على الشاشات الكبيرة */
+        }
+        
+        @media (max-width: 1024px) {
+            main[data-spa-content="true"],
+            #mainContent[data-spa-content="true"] {
+                margin-right: 0 !important; /* إزالة مسافة السايد بار على الشاشات الصغيرة */
+            }
+        }
+        
+        /* تحسينات نافذة الإعدادات */
+        #settingsModal {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            z-index: 9999 !important;
+            background-color: rgba(0, 0, 0, 0.5) !important;
+        }
+        
+        #settingsModal.hidden {
+            display: none !important;
+        }
+        
+        #settingsModal > div {
+            background-color: white !important;
+            position: relative !important;
+            z-index: 10000 !important;
+            width: 100% !important;
+            max-width: 28rem !important;
+            border-radius: 0.75rem !important;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+            padding: 1.5rem !important;
+            display: block !important;
+            visibility: visible !important;
+        }
+        
+        #settingsModal .space-y-4 > * {
+            display: block !important;
+            visibility: visible !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <nav id="mainHeader" class="app-header" data-persistent="true">
+        <div class="max-w-full mx-auto px-6" style="padding-left: 1rem !important; padding-right: 1rem !important;">
+            <div class="flex justify-between items-center h-16">
+                <!-- اسم المشروع -->
+                <div class="flex items-center">
+                    <a href="index.html" class="text-lg font-bold" style="font-size: 1.125rem !important; color: rgb(147, 51, 234);">
+                        نظام إدارة المدرسة
+                    </a>
+                </div>
+                
+                <!-- اسم المستخدم وصورته والإعدادات -->
+                <div class="flex items-center space-x-4 space-x-reverse gap-4">
+                    <!-- معلومات المستخدم -->
+                    <div class="flex items-center gap-2.5">
+                        <div class="text-right">
+                            <p class="text-xs font-medium text-gray-700" id="userName" style="font-size: 0.75rem !important; line-height: 1.2;">علي أحمد</p>
+                            <p class="text-xs text-gray-500" id="userPosition" style="font-size: 0.6875rem !important; line-height: 1.2;">مدير</p>
+                        </div>
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white font-bold text-xs shadow-sm overflow-hidden" id="userAvatar" style="flex-shrink: 0;">
+                            <img src="https://ui-avatars.com/api/?name=علي+أحمد&background=9333ea&color=fff&size=128" alt="صورة المستخدم" class="w-full h-full object-cover" id="userAvatarImg">
+                        </div>
+                    </div>
+                    
+                    <!-- زر الإعدادات -->
+                    <button onclick="openSettings()" class="w-10 h-10 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-purple-600 transition-all duration-200 relative flex items-center justify-center" title="الإعدادات">
+                        <i class="fas fa-cog" style="font-size: 1.25rem !important;"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- السايد بار -->
+    <aside id="mainSidebar" class="app-sidebar hidden lg:block" data-persistent="true">
+        <div class="sidebar-content">
+            <nav class="sidebar-nav">
+                <a href="index.html" class="sidebar-link active" data-page="index" id="nav-home" data-route="index">
+                    <i class="fas fa-home"></i>
+                    <span>الصفحة الرئيسية</span>
+                </a>
+                <a href="teachers.html" class="sidebar-link" data-page="teachers" id="nav-teachers" data-route="teachers">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <span>المعلمين</span>
+                </a>
+                <a href="students.html" class="sidebar-link" data-page="students" id="nav-students" data-route="students">
+                    <i class="fas fa-user-graduate"></i>
+                    <span>الطلاب</span>
+                </a>
+                <a href="staff.html" class="sidebar-link" data-page="staff" id="nav-staff" data-route="staff">
+                    <i class="fas fa-users"></i>
+                    <span>الموظفين</span>
+                </a>
+                <a href="subjects.html" class="sidebar-link" data-page="subjects" id="nav-subjects" data-route="subjects">
+                    <i class="fas fa-book"></i>
+                    <span>المواد</span>
+                </a>
+                <a href="accounts.html" class="sidebar-link" data-page="accounts" id="nav-accounts" data-route="accounts">
+                    <i class="fas fa-wallet"></i>
+                    <span>الحسابات</span>
+                </a>
+            </nav>
+            
+            <!-- حقوق الملكية -->
+            <div class="mt-auto px-3 py-4">
+                <p class="text-xs text-gray-500 text-right" style="font-size: 0.6875rem !important;">
+                    © 2024 نظام إدارة المدرسة<br>
+                    جميع الحقوق محفوظة
+                </p>
+            </div>
+        </div>
+    </aside>
+    
+    <!-- زر فتح/إغلاق السايد بار للشاشات الصغيرة -->
+    <button id="sidebarToggle" class="lg:hidden fixed bottom-4 right-4 z-40 bg-purple-600 text-white p-3 rounded-full shadow-lg hover:bg-purple-700 transition-all duration-200">
+        <i class="fas fa-bars text-xl"></i>
+    </button>
+    
+    <!-- السايد بار للشاشات الصغيرة (قابل للطي) -->
+    <aside id="mobileSidebar" class="sidebar-main lg:hidden translate-x-full">
+        <div class="sidebar-content">
+            <div class="flex justify-between items-center mb-4 px-4 pt-4">
+                <h2 class="text-white font-bold text-lg">القائمة</h2>
+                <button id="closeSidebar" class="text-white hover:text-purple-200 transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="index.html" class="sidebar-link active" id="nav-home-mobile" data-route="index">
+                    <i class="fas fa-home"></i>
+                    <span>الصفحة الرئيسية</span>
+                </a>
+                <a href="teachers.html" class="sidebar-link" id="nav-teachers-mobile" data-route="teachers">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <span>المعلمين</span>
+                </a>
+                <a href="students.html" class="sidebar-link" id="nav-students-mobile" data-route="students">
+                    <i class="fas fa-user-graduate"></i>
+                    <span>الطلاب</span>
+                </a>
+                <a href="staff.html" class="sidebar-link" id="nav-staff-mobile" data-route="staff">
+                    <i class="fas fa-users"></i>
+                    <span>الموظفين</span>
+                </a>
+                <a href="subjects.html" class="sidebar-link" id="nav-subjects-mobile" data-route="subjects">
+                    <i class="fas fa-book"></i>
+                    <span>المواد</span>
+                </a>
+                <a href="accounts.html" class="sidebar-link" id="nav-accounts-mobile" data-route="accounts">
+                    <i class="fas fa-wallet"></i>
+                    <span>الحسابات</span>
+                </a>
+            </nav>
+        </div>
+    </aside>
+    
+    <!-- نافذة الإعدادات -->
+    <div id="settingsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onclick="if(event.target === this) closeSettings()">
+        <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl" style="position: relative; z-index: 10000;">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">الإعدادات</h2>
+                <button onclick="closeSettings()" class="text-gray-400 hover:text-gray-600 text-2xl font-bold" type="button" title="إغلاق">
+                    &times;
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div class="p-4 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-user text-purple-600 text-xl"></i>
+                        <div>
+                            <p class="font-semibold text-gray-900">الملف الشخصي</p>
+                            <p class="text-sm text-gray-500">تعديل معلوماتك الشخصية</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-bell text-purple-600 text-xl"></i>
+                        <div>
+                            <p class="font-semibold text-gray-900">الإشعارات</p>
+                            <p class="text-sm text-gray-500">إدارة الإشعارات</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-moon text-purple-600 text-xl"></i>
+                        <div>
+                            <p class="font-semibold text-gray-900">المظهر</p>
+                            <p class="text-sm text-gray-500">تغيير المظهر</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer" onclick="logout()">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-sign-out-alt text-red-600 text-xl"></i>
+                        <div>
+                            <p class="font-semibold text-gray-900">تسجيل الخروج</p>
+                            <p class="text-sm text-gray-500">الخروج من النظام</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- نافذة الإجراء السريع -->
+    <div id="quickActionModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-6 w-full max-w-2xl shadow-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">إجراء سريع</h2>
+                <button onclick="closeQuickActionModal()" class="text-gray-400 hover:text-gray-600 text-2xl font-bold" type="button" title="إغلاق">
+                    &times;
+                </button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="p-4 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer border border-gray-200" onclick="navigateToQuickAction('students')">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center">
+                            <i class="fas fa-user-graduate text-blue-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-gray-900">إضافة طالب جديد</p>
+                            <p class="text-sm text-gray-500">تسجيل طالب جديد في النظام</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer border border-gray-200" onclick="navigateToQuickAction('teachers')">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-lg bg-purple-100 flex items-center justify-center">
+                            <i class="fas fa-chalkboard-teacher text-purple-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-gray-900">إضافة معلم جديد</p>
+                            <p class="text-sm text-gray-500">تسجيل معلم جديد في النظام</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer border border-gray-200" onclick="navigateToQuickAction('staff')">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center">
+                            <i class="fas fa-users text-green-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-gray-900">إضافة موظف جديد</p>
+                            <p class="text-sm text-gray-500">تسجيل موظف جديد في النظام</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer border border-gray-200" onclick="navigateToQuickAction('subjects')">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-lg bg-red-100 flex items-center justify-center">
+                            <i class="fas fa-book text-red-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-gray-900">إضافة مادة جديدة</p>
+                            <p class="text-sm text-gray-500">تسجيل مادة جديدة في النظام</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer border border-gray-200" onclick="navigateToQuickAction('accounts')">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-lg bg-orange-100 flex items-center justify-center">
+                            <i class="fas fa-wallet text-orange-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-gray-900">إضافة حساب جديد</p>
+                            <p class="text-sm text-gray-500">تسجيل حساب جديد في النظام</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <main id="mainContent" class="app-main-content max-w-full mx-auto px-6 py-6 content-container" data-spa-content="true">
+        <div id="dashboardContent">
+            <!-- نظرة عامة على المدرسة والأزرار السريعة -->
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h1 class="text-2xl font-bold mb-1" style="color: rgb(147, 51, 234);">نظرة عامة على المدرسة</h1>
+                    <p class="text-sm text-gray-600">تتبع الطلاب والحضور والميزانية في مكان واحد.</p>
+                </div>
+                <!-- الأزرار السريعة -->
+                <div class="flex gap-3">
+                    <button class="btn-quick-action" onclick="openQuickActionModal()">
+                        <i class="fas fa-plus"></i>
+                        <span>إجراء سريع</span>
+                    </button>
+                    <button class="btn-export" onclick="openExportReportModal()">
+                        <i class="fas fa-file-export"></i>
+                        <span>تصدير تقرير</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- البطاقات الإحصائية -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <!-- الدخل المحصل -->
+                <div class="stat-card">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-xs font-semibold text-green-600">+8%</span>
+                            </div>
+                            <p class="text-xs font-medium text-gray-600 mb-1">الدخل المحصل</p>
+                            <p class="text-2xl font-bold text-gray-900" id="collectedIncome">22.5M</p>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <i class="fas fa-dollar-sign text-green-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- غياب اليوم -->
+                <div class="stat-card">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-xs font-semibold text-red-600">-2%</span>
+                            </div>
+                            <p class="text-xs font-medium text-gray-600 mb-1">غياب اليوم</p>
+                            <p class="text-2xl font-bold text-gray-900" id="todayAbsence">18</p>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <i class="fas fa-user-minus text-red-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- إجمالي الطلاب -->
+                <div class="stat-card">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-xs font-semibold text-green-600">+12%</span>
+                            </div>
+                            <p class="text-xs font-medium text-gray-600 mb-1">إجمالي الطلاب</p>
+                            <p class="text-2xl font-bold text-gray-900" id="totalStudents">482</p>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <i class="fas fa-user-graduate text-blue-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- الأقسام السفلية -->
+            <div class="flex flex-col lg:flex-row gap-6">
+                <div class="card hover:shadow-xl transition-shadow duration-300 " style="flex: 1; min-width: 0;">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4 pb-3 border-b border-gray-200">الطلاب الجدد</h2>
+                    <div class="space-y-3" id="recentStudents">
+                        <p class="text-gray-500">جاري التحميل...</p>
+                    </div>
+                </div>
+                
+                <div class="activities-card " style="width: 40%; min-width: 300px; flex-shrink: 0;">
+                    <div class="px-10">
+                        <h2 class="text-base font-semibold text-white mb-4 pb-2 border-b border-purple-300 p-6">الأنشطة الأخيرة</h2>
+                        <div class="space-y-4 p-6" id="recentActivities">
+                            <p class="text-white text-sm">جاري التحميل...</p>
+                        </div>
+                        <button onclick="viewAllActivities()" class="mt-4 w-full py-2.5 px-4 text-sm font-medium text-purple-600 bg-white hover:bg-purple-50 rounded-xl transition-colors shadow-sm">
+                            مشاهدة جميع الأنشطة
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/data-manager.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/page-init.js"></script>
+    <script src="js/router.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script>
+        // معلومات المستخدم (يمكن جلبها من API لاحقاً)
+        let currentUser = {
+            name: 'أحمد المدير',
+            position: 'المشرف العام',
+            avatar: 'https://ui-avatars.com/api/?name=أحمد+المدير&background=9333ea&color=fff&size=128'
+        };
+
+        // تحديث معلومات المستخدم في الهيدر
+        function updateUserInfo() {
+            const userNameEl = document.getElementById('userName');
+            const userPositionEl = document.getElementById('userPosition');
+            const userAvatarText = document.getElementById('userAvatarText');
+            const userAvatarImg = document.getElementById('userAvatarImg');
+            const userAvatar = document.getElementById('userAvatar');
+            
+            if (userNameEl) userNameEl.textContent = currentUser.name;
+            if (userPositionEl) userPositionEl.textContent = currentUser.position;
+            if (userAvatarText) {
+                const firstLetter = currentUser.name ? currentUser.name.charAt(0) : 'أ';
+                userAvatarText.textContent = firstLetter;
+            }
+            if (userAvatarImg) {
+                userAvatarImg.src = currentUser.avatar;
+                userAvatarImg.alt = currentUser.name;
+                
+                // معالجة خطأ تحميل الصورة
+                userAvatarImg.onerror = function() {
+                    this.style.display = 'none';
+                    if (userAvatarText) {
+                        userAvatarText.style.display = 'block';
+                    }
+                };
+            }
+        }
+
+        // تحديد الصفحة النشطة في السايد بار
+        function setActiveNavItem() {
+            const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+            const navLinks = document.querySelectorAll('.sidebar-link');
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                const href = link.getAttribute('href');
+                if (href === currentPage || (currentPage === '' && href === 'index.html')) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        // إدارة السايد بار للشاشات الصغيرة
+        function initMobileSidebar() {
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const mobileSidebar = document.getElementById('mobileSidebar');
+            const closeSidebar = document.getElementById('closeSidebar');
+            
+            if (sidebarToggle && mobileSidebar) {
+                sidebarToggle.addEventListener('click', function() {
+                    mobileSidebar.classList.remove('translate-x-full');
+                });
+            }
+            
+            if (closeSidebar && mobileSidebar) {
+                closeSidebar.addEventListener('click', function() {
+                    mobileSidebar.classList.add('translate-x-full');
+                });
+            }
+            
+            // إغلاق السايد بار عند النقر على رابط
+            const mobileLinks = mobileSidebar?.querySelectorAll('.sidebar-link');
+            if (mobileLinks) {
+                mobileLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        mobileSidebar.classList.add('translate-x-full');
+                    });
+                });
+            }
+        }
+
+        // فتح نافذة الإعدادات
+        function openSettings() {
+            console.log('[Settings] Opening settings modal');
+            const modal = document.getElementById('settingsModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.style.display = 'flex';
+                modal.style.visibility = 'visible';
+                modal.style.opacity = '1';
+                console.log('[Settings] Modal opened successfully');
+            } else {
+                console.error('[Settings] Settings modal not found');
+            }
+        }
+
+        // إغلاق نافذة الإعدادات
+        function closeSettings() {
+            console.log('[Settings] Closing settings modal');
+            const modal = document.getElementById('settingsModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.style.display = 'none';
+            }
+        }
+
+        // التأكد من أن Header يبقى ظاهراً دائماً
+        function ensureHeaderAlwaysVisible() {
+            const header = document.getElementById('mainHeader');
+            if (header) {
+                header.style.display = 'block';
+                header.style.visibility = 'visible';
+                header.style.opacity = '1';
+                header.style.position = 'fixed';
+                header.style.top = '0';
+                header.style.left = '0';
+                header.style.right = '0';
+                header.style.zIndex = '9999';
+                header.style.width = '100%';
+                header.classList.remove('hidden');
+                header.setAttribute('data-persistent', 'true');
+            }
+        }
+        
+        // التأكد من أن Sidebar يبقى ظاهراً دائماً
+        function ensureSidebarAlwaysVisible() {
+            const sidebar = document.getElementById('mainSidebar');
+            if (sidebar) {
+                sidebar.style.display = '';
+                sidebar.style.visibility = 'visible';
+                sidebar.style.opacity = '1';
+                sidebar.style.position = 'fixed';
+                sidebar.classList.remove('hidden');
+                sidebar.setAttribute('data-persistent', 'true');
+            }
+        }
+        
+        // إغلاق النافذة عند النقر خارجها
+        document.addEventListener('DOMContentLoaded', function() {
+            // التأكد من أن Header ظاهر من البداية
+            ensureHeaderAlwaysVisible();
+            
+            // التأكد من أن Header و Sidebar يبقيا ظاهرين كل 500ms
+            setInterval(() => {
+                ensureHeaderAlwaysVisible();
+                ensureSidebarAlwaysVisible();
+            }, 500);
+            
+            updateUserInfo();
+            setActiveNavItem();
+            initMobileSidebar();
+            
+            const settingsModal = document.getElementById('settingsModal');
+            if (settingsModal) {
+                settingsModal.addEventListener('click', function(e) {
+                    if (e.target === settingsModal) {
+                        closeSettings();
+                    }
+                });
+                
+                // إغلاق عند الضغط على Escape
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && !settingsModal.classList.contains('hidden')) {
+                        closeSettings();
+                    }
+                });
+            }
+            
+            const quickActionModal = document.getElementById('quickActionModal');
+            if (quickActionModal) {
+                quickActionModal.addEventListener('click', function(e) {
+                    if (e.target === quickActionModal) {
+                        closeQuickActionModal();
+                    }
+                });
+                
+                // إغلاق عند الضغط على Escape
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && !quickActionModal.classList.contains('hidden')) {
+                        closeQuickActionModal();
+                    }
+                });
+            }
+        });
+        
+        // التأكد من أن Header و Sidebar يبقيا ظاهرين حتى بعد تحميل المحتوى
+        document.addEventListener('pageLoaded', function() {
+            setTimeout(() => {
+                ensureHeaderAlwaysVisible();
+                ensureSidebarAlwaysVisible();
+            }, 100);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,422 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Hubot+Sans:wght@300;400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    font-family: 'Cairo', 'Hubot Sans', sans-serif;
+  }
+  
+  body {
+    background: #ffffff;
+    @apply text-gray-900;
+    font-family: 'Cairo', sans-serif;
+    min-height: 100vh;
+  }
+  
+  [lang="ar"], [dir="rtl"] {
+    font-family: 'Cairo', sans-serif;
+  }
+  
+  [lang="en"], [dir="ltr"] {
+    font-family: 'Hubot Sans', sans-serif;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-white shadow-sm border border-gray-100;
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95);
+    padding: 1rem !important; /* تقليل padding من p-6 (1.5rem) إلى 1rem */
+    border-radius: 1.5rem !important; /* rounded-3xl = 1.5rem */
+  }
+  
+  /* عناوين البطاقات */
+  .card h2,
+  .card h3 {
+    font-size: 1rem !important; /* تقليل من text-xl/text-lg */
+    font-weight: 600 !important;
+    margin-bottom: 0.75rem !important;
+  }
+  
+  /* نصوص البطاقات */
+  .card p {
+    font-size: 0.875rem !important; /* text-sm */
+  }
+  
+  .btn-primary {
+    @apply bg-purple-600 text-white px-6 py-2.5 rounded-lg hover:bg-purple-700 active:bg-purple-800 transition-all duration-200 font-semibold shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2;
+  }
+  
+  .btn-secondary {
+    @apply bg-gray-100 text-gray-700 px-6 py-2.5 rounded-lg hover:bg-gray-200 active:bg-gray-300 transition-all duration-200 font-semibold shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2;
+  }
+  
+  .input-field {
+    @apply w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white;
+  }
+  
+  /* الهيدر الثابت */
+  nav.fixed,
+  nav[class*="fixed"],
+  body > nav,
+  #mainHeader,
+  nav[id*="Header"],
+  nav[id*="header"] {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 9999 !important;
+    width: 100% !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px) !important;
+  }
+  
+  /* التأكد من أن الهيدر يظهر دائماً */
+  body > nav:first-of-type {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 9999 !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  /* التأكد من أن Header يبقى ظاهراً دائماً - قواعد إضافية */
+  #mainHeader,
+  nav#mainHeader {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 9999 !important;
+    width: 100% !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px) !important;
+    min-height: 64px !important;
+  }
+  
+  /* منع إخفاء Header بأي طريقة */
+  #mainHeader.hidden,
+  nav#mainHeader.hidden {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  #mainHeader[style*="display: none"],
+  nav#mainHeader[style*="display: none"] {
+    display: block !important;
+  }
+  
+  #mainHeader[style*="visibility: hidden"],
+  nav#mainHeader[style*="visibility: hidden"] {
+    visibility: visible !important;
+  }
+  
+  /* السايد بار الرئيسي - ثابت تماماً */
+  .sidebar-main {
+    position: fixed !important;
+    top: 64px !important; /* يبدأ مباشرة تحت الهيدر (h-16 = 64px) */
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 12rem !important; /* 192px - أنحف من قبل (كان 16rem = 256px) */
+    height: calc(100vh - 64px) !important;
+    background: #ffffff !important; /* خلفية بيضاء */
+    background-color: #ffffff !important; /* خلفية بيضاء - تأكيد إضافي */
+    border-left: 1px solid rgba(229, 231, 235, 1) !important; /* Border رمادي فاتح */
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.05) !important; /* ظل ناعم */
+    z-index: 30 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    transform: none !important;
+    will-change: auto !important;
+    direction: rtl !important; /* دعم RTL */
+  }
+  
+  /* التأكد من أن العناصر الثابتة تبقى ثابتة */
+  [data-persistent="true"] {
+    position: fixed !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  /* التأكد من أن Header ثابت دائماً */
+  #mainHeader[data-persistent="true"],
+  nav[data-persistent="true"] {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 9999 !important;
+    width: 100% !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  /* التأكد من أن Sidebar ثابت دائماً */
+  #mainSidebar[data-persistent="true"],
+  aside[data-persistent="true"] {
+    position: fixed !important;
+    top: 64px !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    z-index: 30 !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  /* التأكد من أن Main Content قابل للتمرير */
+  main[data-spa-content="true"],
+  #mainContent[data-spa-content="true"] {
+    position: relative !important;
+    z-index: 10 !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    transition: opacity 0.3s ease, transform 0.3s ease !important;
+  }
+  
+  /* محتوى السايد بار */
+  .sidebar-content {
+    @apply h-full flex flex-col;
+    padding: 1rem 0 0 0 !important;
+  }
+  
+  /* قائمة التنقل */
+  .sidebar-nav {
+    @apply flex flex-col space-y-1 px-1;
+    direction: rtl !important;
+  }
+  
+  /* روابط السايد بار */
+  .sidebar-link {
+    @apply flex items-center gap-2 px-3 py-2.5 rounded-lg transition-all duration-200;
+    color: #6b7280 !important; /* رمادي مودرن */
+    direction: rtl !important;
+    text-align: right !important;
+    margin: 0.125rem 0.5rem !important;
+    cursor: pointer !important;
+    user-select: none !important;
+    font-size: 0.8125rem !important; /* أصغر قليلًا (13px) */
+    font-weight: 500 !important;
+  }
+  
+  .sidebar-link i {
+    @apply w-5 text-center;
+    font-size: 0.875rem !important; /* 14px */
+    color: #6b7280 !important; /* رمادي مودرن */
+    flex-shrink: 0 !important;
+  }
+  
+  .sidebar-link span {
+    @apply font-medium;
+    flex: 1 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  
+  /* الرابط النشط - تحسين التنسيق البصري */
+  .sidebar-link.active {
+    background-color: rgba(147, 51, 234, 0.12) !important; /* خلفية بنفسجية فاتحة أكثر وضوحاً */
+    color: #9333ea !important; /* نص بنفسجي */
+    position: relative !important;
+    font-weight: 600 !important; /* نص أكثر سماكة */
+    box-shadow: 0 2px 4px rgba(147, 51, 234, 0.1) !important; /* ظل خفيف */
+    transition: all 0.3s ease !important;
+  }
+  
+  .sidebar-link.active i {
+    color: #9333ea !important; /* أيقونة بنفسجية */
+    transform: scale(1.1) !important; /* تكبير طفيف للأيقونة */
+    transition: transform 0.3s ease !important;
+  }
+  
+  .sidebar-link.active::before {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px; /* زيادة العرض من 3px إلى 4px */
+    height: 60%; /* زيادة الارتفاع من 50% إلى 60% */
+    background-color: #9333ea;
+    border-radius: 0 4px 4px 0;
+    box-shadow: 0 0 8px rgba(147, 51, 234, 0.4); /* إضافة ظل للخط */
+    transition: all 0.3s ease !important;
+  }
+  
+  /* تأثير hover */
+  .sidebar-link:not(.active):hover {
+    background-color: rgba(147, 51, 234, 0.05) !important; /* خلفية فاتحة عند hover */
+    color: #9333ea !important;
+  }
+  
+  .sidebar-link:not(.active):hover i {
+    color: #9333ea !important;
+  }
+  
+  /* السايد بار القديم (للتوافق) */
+  .sidebar {
+    @apply fixed right-0 top-0 h-full w-48 bg-gradient-to-b from-purple-800 to-purple-900 shadow-2xl z-40;
+    position: fixed !important;
+    top: 64px !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    height: calc(100vh - 64px) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    will-change: auto;
+    transform: none !important;
+    direction: rtl !important;
+  }
+  
+  .main-header {
+    @apply fixed top-0 left-0 right-64 h-16 bg-white/95 backdrop-blur-md shadow-lg z-30 flex items-center justify-between px-6 border-b border-gray-200;
+  }
+  
+  .main-content {
+    @apply mr-64 mt-16 p-6;
+  }
+  
+  .student-avatar {
+    @apply w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white font-bold text-sm shadow-md;
+  }
+  
+  .user-avatar {
+    @apply w-10 h-10 rounded-full border-2 border-white;
+  }
+  
+  /* تحسين عرض الأزرار في الجداول */
+  table button {
+    @apply inline-flex items-center justify-center;
+  }
+  
+  /* أزرار التعديل والحذف الموحدة */
+  .btn-edit {
+    @apply px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 active:bg-purple-800 transition-all duration-200 text-sm font-semibold cursor-pointer shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 whitespace-nowrap flex items-center;
+  }
+  
+  .btn-delete {
+    @apply px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 active:bg-red-800 transition-all duration-200 text-sm font-semibold cursor-pointer shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 whitespace-nowrap flex items-center;
+  }
+  
+  /* عمود الإجراءات */
+  .actions-column {
+    @apply px-4 py-3 text-sm font-medium sticky right-0 bg-white z-10;
+  }
+  
+  .actions-buttons {
+    @apply flex items-center justify-end gap-2 flex-nowrap;
+  }
+  
+  /* تحسين الصفوف */
+  .table-row {
+    @apply hover:bg-gray-50;
+  }
+  
+  /* التأكد من ظهور الأزرار */
+  .overflow-x-auto {
+    @apply -mx-4 sm:mx-0;
+  }
+  
+  .overflow-x-auto table {
+    @apply w-full;
+  }
+  
+  /* رسائل التحميل والخطأ */
+  #loading-indicator,
+  #error-indicator {
+    @apply min-h-[200px];
+  }
+  
+  /* تأثير التحميل */
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  .animate-spin {
+    animation: spin 1s linear infinite;
+  }
+  
+  /* تحسينات SPA Layout */
+  /* منع إعادة تحميل العناصر الثابتة */
+  body {
+    overflow-x: hidden !important;
+  }
+  
+  /* التأكد من أن Main Content لا يتداخل مع Header و Sidebar */
+  main[data-spa-content="true"],
+  #mainContent[data-spa-content="true"] {
+    margin-top: 64px !important; /* مسافة من Header */
+    margin-right: 12rem !important; /* مسافة من Sidebar على الشاشات الكبيرة */
+  }
+  
+  @media (max-width: 1024px) {
+    main[data-spa-content="true"],
+    #mainContent[data-spa-content="true"] {
+      margin-right: 0 !important; /* إزالة المسافة على الشاشات الصغيرة */
+    }
+  }
+  
+  /* تحسين انتقالات الحالة النشطة */
+  .sidebar-link {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+  
+  /* تأثير بصري إضافي للحالة النشطة */
+  .sidebar-link.active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, rgba(147, 51, 234, 0.3), rgba(147, 51, 234, 0.1));
+    border-radius: 0 2px 2px 0;
+  }
+  
+  /* منع حدوث refresh عند النقر على الروابط */
+  a[data-route],
+  a.sidebar-link {
+    cursor: pointer !important;
+    user-select: none !important;
+  }
+  
+  /* تحسين عرض المحتوى عند التحميل */
+  main[data-spa-content="true"] > * {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}

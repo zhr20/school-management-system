@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة المدرسة - إدارة الموظفين</title>
+    <link rel="stylesheet" href="css/main.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .btn-add {
+            color: #ffffff !important;
+            border: none !important;
+            transition: all 0.2s ease !important;
+            padding: 0.625rem 1.25rem !important;
+            border-radius: 0.5rem !important;
+            font-weight: 500 !important;
+        }
+        
+        .btn-add:hover {
+            color: #ffffff !important;
+        }
+        
+        .btn-add i,
+        .btn-add span {
+            color: #ffffff !important;
+        }
+        
+        /* تحسينات النافذة المنبثقة */
+        #staffModal {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            z-index: 9999 !important;
+            background-color: rgba(0, 0, 0, 0.5) !important;
+        }
+        
+        #staffModal.hidden {
+            display: none !important;
+        }
+        
+        #staffModal > div {
+            background-color: white !important;
+            position: relative !important;
+            z-index: 10000 !important;
+            width: 100% !important;
+            max-width: 42rem !important;
+            max-height: 90vh !important;
+            border-radius: 0.5rem !important;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+            padding: 1.5rem !important;
+            overflow-y: auto !important;
+            display: block !important;
+            visibility: visible !important;
+        }
+        
+        #staffForm {
+            display: block !important;
+            visibility: visible !important;
+        }
+        
+        #staffForm > * {
+            display: block !important;
+            visibility: visible !important;
+        }
+        
+        #staffForm input,
+        #staffForm select,
+        #staffForm label {
+            display: block !important;
+            visibility: visible !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- الهيدر الثابت -->
+    <nav id="mainHeader" class="bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-200 fixed top-0 left-0 right-0 z-50" style="position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; z-index: 9999 !important; width: 100% !important; display: block !important; visibility: visible !important; opacity: 1 !important;">
+        <div class="max-w-7xl mx-auto px-4" style="padding-left: 1rem !important; padding-right: 1rem !important;">
+            <div class="flex justify-between items-center h-16">
+                <!-- اسم المشروع -->
+                <div class="flex items-center">
+                    <a href="index.html" class="text-lg font-bold" style="font-size: 1.125rem !important; color: rgb(147, 51, 234);">
+                        نظام إدارة المدرسة
+                    </a>
+                </div>
+                
+                <!-- اسم المستخدم وصورته والإعدادات -->
+                <div class="flex items-center space-x-4 space-x-reverse gap-4">
+                    <!-- معلومات المستخدم -->
+                    <div class="flex items-center gap-2.5">
+                        <div class="text-right">
+                            <p class="text-xs font-medium text-gray-700" id="userName" style="font-size: 0.75rem !important; line-height: 1.2;">علي أحمد</p>
+                            <p class="text-xs text-gray-500" id="userPosition" style="font-size: 0.6875rem !important; line-height: 1.2;">مدير</p>
+                        </div>
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white font-bold text-xs shadow-sm overflow-hidden" id="userAvatar" style="flex-shrink: 0;">
+                            <img src="https://ui-avatars.com/api/?name=علي+أحمد&background=9333ea&color=fff&size=128" alt="صورة المستخدم" class="w-full h-full object-cover" id="userAvatarImg">
+                        </div>
+                    </div>
+                    
+                    <!-- زر الإعدادات -->
+                    <button onclick="openSettings()" class="w-10 h-10 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-purple-600 transition-all duration-200 relative flex items-center justify-center" title="الإعدادات">
+                        <i class="fas fa-cog" style="font-size: 1.25rem !important;"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <main class="lg:mr-48 max-w-7xl mx-auto px-4 py-8 mt-16" style="margin-top: 4rem !important;">
+        <div>
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-900">إدارة الموظفين</h1>
+                <button onclick="openAddModal()" class="btn-add bg-purple-600 p-2 text-white rounded-md">
+                    <i class="fas fa-plus ml-2"></i>
+                    إضافة موظف جديد
+                </button>
+            </div>
+            
+            <div class="card hover:shadow-xl transition-shadow duration-300">
+                <div class="mb-6">
+                    <input
+                        id="searchQuery"
+                        type="text"
+                        placeholder="بحث عن موظف..."
+                        class="input-field"
+                    />
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gradient-to-r from-purple-50 to-blue-50">
+                            <tr>
+                                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الاسم</th>
+                                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المنصب</th>
+                                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">البريد الإلكتروني</th>
+                                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الهاتف</th>
+                                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الصلاحيات</th>
+                                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[180px]">الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="staffTableBody" class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">جاري التحميل...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Add/Edit Modal -->
+            <div id="staffModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onclick="if(event.target === this) closeModal()">
+                <div class="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto" style="position: relative; z-index: 10000;">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 id="modalTitle" class="text-2xl font-bold text-gray-900">إضافة موظف جديد</h2>
+                        <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 text-2xl font-bold" type="button" title="إغلاق" style="line-height: 1;">
+                            &times;
+                        </button>
+                    </div>
+                    <form id="staffForm" onsubmit="saveStaff(event)" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">الاسم</label>
+                                <input id="staffName" type="text" required class="input-field" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">المنصب</label>
+                                <select id="staffPosition" required class="input-field" onchange="updateDefaultPermissions()">
+                                    <option value="">اختر المنصب</option>
+                                    <option value="مدير">مدير</option>
+                                    <option value="محاسب">محاسب</option>
+                                    <option value="سكرتير">سكرتير</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">البريد الإلكتروني</label>
+                                <input id="staffEmail" type="email" required class="input-field" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">الهاتف</label>
+                                <input id="staffPhone" type="tel" required class="input-field" />
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                كلمة المرور
+                                <span id="passwordHint" class="text-xs text-gray-500">(اتركه فارغاً للاحتفاظ بالكلمة الحالية)</span>
+                            </label>
+                            <input id="staffPassword" type="password" class="input-field" placeholder="الافتراضي: 123456" />
+                        </div>
+                        
+                        <div class="border-t pt-4">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-3">الصلاحيات</h3>
+                            <div class="grid grid-cols-2 gap-3">
+                                <label class="flex items-center space-x-2 space-x-reverse">
+                                    <input type="checkbox" id="perm_manage_students" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+                                    <span class="text-sm text-gray-700">إدارة الطلاب</span>
+                                </label>
+                                <label class="flex items-center space-x-2 space-x-reverse">
+                                    <input type="checkbox" id="perm_manage_teachers" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+                                    <span class="text-sm text-gray-700">إدارة المعلمين</span>
+                                </label>
+                                <label class="flex items-center space-x-2 space-x-reverse">
+                                    <input type="checkbox" id="perm_manage_subjects" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+                                    <span class="text-sm text-gray-700">إدارة المواد</span>
+                                </label>
+                                <label class="flex items-center space-x-2 space-x-reverse">
+                                    <input type="checkbox" id="perm_manage_staff" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+                                    <span class="text-sm text-gray-700">إدارة الموظفين</span>
+                                </label>
+                                <label class="flex items-center space-x-2 space-x-reverse">
+                                    <input type="checkbox" id="perm_view_reports" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+                                    <span class="text-sm text-gray-700">عرض التقارير</span>
+                                </label>
+                                <label class="flex items-center space-x-2 space-x-reverse">
+                                    <input type="checkbox" id="perm_manage_finances" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+                                    <span class="text-sm text-gray-700">إدارة المالية</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-end space-x-2 space-x-reverse pt-4">
+                            <button type="button" onclick="closeModal()" class="btn-secondary">إلغاء</button>
+                            <button type="submit" class="btn-primary">حفظ</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/data-manager.js"></script>
+    <script src="js/page-init.js"></script>
+    <script src="js/router.js"></script>
+    <script src="js/staff.js"></script>
+    <script>
+        // معلومات المستخدم (يمكن جلبها من API لاحقاً)
+        let currentUser = {
+            name: 'علي أحمد',
+            position: 'مدير',
+            avatar: 'https://ui-avatars.com/api/?name=علي+أحمد&background=9333ea&color=fff&size=128'
+        };
+
+        // تحديث معلومات المستخدم في الهيدر
+        function updateUserInfo() {
+            const userNameEl = document.getElementById('userName');
+            const userPositionEl = document.getElementById('userPosition');
+            const userAvatarImg = document.getElementById('userAvatarImg');
+            const userAvatar = document.getElementById('userAvatar');
+            
+            if (userNameEl) userNameEl.textContent = currentUser.name;
+            if (userPositionEl) userPositionEl.textContent = currentUser.position;
+            if (userAvatarImg) {
+                userAvatarImg.src = currentUser.avatar;
+                userAvatarImg.alt = currentUser.name;
+                
+                // معالجة خطأ تحميل الصورة
+                userAvatarImg.onerror = function() {
+                    this.style.display = 'none';
+                    if (userAvatar) {
+                        const firstLetter = currentUser.name ? currentUser.name.charAt(0) : 'ع';
+                        userAvatar.innerHTML = '<span style="font-size: 0.75rem;">' + firstLetter + '</span>';
+                    }
+                };
+            }
+        }
+
+        // فتح نافذة الإعدادات
+        function openSettings() {
+            const modal = document.getElementById('settingsModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+            } else {
+                alert('نافذة الإعدادات قيد التطوير');
+            }
+        }
+
+        // إغلاق نافذة الإعدادات
+        function closeSettings() {
+            const modal = document.getElementById('settingsModal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            updateUserInfo();
+            
+            // التأكد من تحميل الجدول عند فتح الصفحة
+            setTimeout(function() {
+                if (typeof loadStaff === 'function') {
+                    console.log('Loading staff table...');
+                    loadStaff();
+                } else {
+                    console.warn('loadStaff function not found, waiting...');
+                    setTimeout(function() {
+                        if (typeof loadStaff === 'function') {
+                            loadStaff();
+                        }
+                    }, 500);
+                }
+            }, 300);
+            
+            // إغلاق نافذة الإعدادات عند النقر خارجها
+            const settingsModal = document.getElementById('settingsModal');
+            if (settingsModal) {
+                settingsModal.addEventListener('click', function(e) {
+                    if (e.target === settingsModal) {
+                        closeSettings();
+                    }
+                });
+                
+                // إغلاق عند الضغط على Escape
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && !settingsModal.classList.contains('hidden')) {
+                        closeSettings();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
